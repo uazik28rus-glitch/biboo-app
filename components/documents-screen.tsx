@@ -60,11 +60,11 @@ export function DocumentsScreen() {
     );
   }
 
-  const docs = [
-    { id: "1", title: "Паспорт Дмитрия", type: "passport" },
-    { id: "2", title: "Паспорт Софьи", type: "passport" },
+    const docs = [
+    { id: "1", title: "Паспорт Данюли", type: "passport" },
+    { id: "2", title: "Паспорт Викули", type: "passport" },
     { id: "3", title: "Полис ОМС", type: "insurance" },
-    { id: "4", title: "СНИЛС Дмитрия", type: "other" },
+    { id: "4", title: "СНИЛС Данюли", type: "other" },
   ];
 
   return (

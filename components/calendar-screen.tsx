@@ -184,9 +184,11 @@ export function CalendarScreen() {
         </div>
       </div>
 
-      <div className="space-y-3">
-        <h3 className="text-xs font-medium text-muted uppercase tracking-wider">Ближайшие</h3>
-        {upcomingEvents.map((event) => (
+            <div className="space-y-3">
+        <h3 className="text-xs font-medium text-muted uppercase tracking-wider">
+          {selectedDate ? `События ${new Date(selectedDate).toLocaleDateString("ru-RU")}` : "Выберите дату"}
+        </h3>
+        {(selectedDate ? events.filter((e) => e.date === selectedDate) : []).map((event) => (
           <Card key={event.id} className="flex items-center gap-4">
             <div className="w-12 h-12 rounded-xl bg-surface-light flex flex-col items-center justify-center shrink-0">
               <span className="text-lg font-bold leading-none">{new Date(event.date).getDate()}</span>
@@ -203,8 +205,11 @@ export function CalendarScreen() {
             )} />
           </Card>
         ))}
-        {upcomingEvents.length === 0 && (
-          <p className="text-muted text-center py-4">Нет предстоящих событий</p>
+        {selectedDate && events.filter((e) => e.date === selectedDate).length === 0 && (
+          <p className="text-muted text-center py-4">Нет событий в этот день</p>
+        )}
+        {!selectedDate && (
+          <p className="text-muted text-center py-4">Нажмите на дату в календаре, чтобы увидеть события</p>
         )}
       </div>
     </div>
