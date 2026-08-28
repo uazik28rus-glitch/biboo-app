@@ -17,6 +17,7 @@ export function CalendarScreen() {
   const [events, setEvents] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [showAdd, setShowAdd] = useState(false);
+  const [selectedDate, setSelectedDate] = useState<string | null>(null);
   const [newEvent, setNewEvent] = useState({ title: "", date: "", type: "other" });
 
   const loadEvents = useCallback(async () => {
@@ -72,11 +73,6 @@ export function CalendarScreen() {
       eventDates.get(day)!.push(e.type);
     }
   });
-
-  const upcomingEvents = events
-    .filter((e) => new Date(e.date) >= new Date(new Date().setHours(0, 0, 0, 0)))
-    .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime())
-    .slice(0, 5);
 
   if (isLoading) {
     return (
@@ -156,13 +152,17 @@ export function CalendarScreen() {
           ))}
           {Array.from({ length: daysInMonth }).map((_, i) => {
             const day = i + 1;
+            const dateStr = `${year}-${String(month + 1).padStart(2, "0")}-${String(day).padStart(2, "0")}`;
             const isToday = day === new Date().getDate() && month === new Date().getMonth() && year === new Date().getFullYear();
+            const isSelected = selectedDate === dateStr;
             const dayEvents = eventDates.get(day) || [];
             return (
               <button
                 key={day}
+                onClick={() => setSelectedDate(isSelected ? null : dateStr)}
                 className={cn(
                   "aspect-square rounded-xl flex flex-col items-center justify-center gap-0.5 text-sm font-medium transition-colors",
+                  isSelected ? "bg-accent-blue text-white" :
                   isToday ? "bg-white text-black" : "hover:bg-surface text-white"
                 )}
               >
@@ -184,7 +184,7 @@ export function CalendarScreen() {
         </div>
       </div>
 
-            <div className="space-y-3">
+      <div className="space-y-3">
         <h3 className="text-xs font-medium text-muted uppercase tracking-wider">
           {selectedDate ? `События ${new Date(selectedDate).toLocaleDateString("ru-RU")}` : "Выберите дату"}
         </h3>
