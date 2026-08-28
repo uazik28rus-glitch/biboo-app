@@ -1,15 +1,17 @@
 "use client";
 
 import { useEffect, useState, useCallback } from "react";
-import { Heart, Calendar, CheckSquare, FileText, Gift, Clock, Lock, Loader2 } from "lucide-react";
-import Link from "next/link";
+import { Heart, Calendar, CheckSquare, FileText, Gift, Clock, Loader2 } from "lucide-react";
+import { useRouter } from "next/navigation";
 import { useAuth } from "@/lib/use-auth";
 import { useRealtime } from "@/lib/use-realtime";
 import { tasksApi, eventsApi, wishesApi, capsulesApi } from "@/lib/api";
 import { getDaysTogether, getDaysUntil } from "@/lib/utils";
+import { tgHaptic } from "@/lib/telegram";
 import { Card } from "./ui/card";
 
 export function HomeScreen() {
+  const router = useRouter();
   const { user, couple } = useAuth();
   const [stats, setStats] = useState({
     tasks: 0,
@@ -35,12 +37,10 @@ export function HomeScreen() {
       const wishesCount = wishesRes.data?.length || 0;
       const eventsCount = eventsRes.data?.length || 0;
 
-      // Ближайшее событие
       const sortedEvents = eventsRes.data
         ?.filter((e: any) => new Date(e.date) >= new Date())
         .sort((a: any, b: any) => new Date(a.date).getTime() - new Date(b.date).getTime());
 
-      // Ближайшая капсула
       const sortedCapsules = capsulesRes.data
         ?.filter((c: any) => !c.is_opened && new Date(c.open_date) > new Date())
         .sort((a: any, b: any) => new Date(a.open_date).getTime() - new Date(b.open_date).getTime());
@@ -63,7 +63,6 @@ export function HomeScreen() {
     loadData();
   }, [loadData]);
 
-  // Realtime обновления
   useRealtime(couple?.id || null, loadData);
 
   const days = couple ? getDaysTogether(couple.start_date) : 0;
@@ -86,7 +85,6 @@ export function HomeScreen() {
 
   return (
     <div className="px-4 pt-6 pb-28 space-y-6 animate-fade-in">
-      {/* Header */}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
           <div className="w-8 h-8 rounded-full bg-gradient-to-br from-accent-blue to-accent-pink flex items-center justify-center">
@@ -97,7 +95,6 @@ export function HomeScreen() {
         <span className="text-xs text-muted">{user?.first_name} & {partnerName}</span>
       </div>
 
-      {/* Main Stats */}
       <div className="space-y-2">
         <div className="flex items-baseline gap-3">
           <h1 className="text-6xl font-bold tracking-tight">{days}</h1>
@@ -110,10 +107,9 @@ export function HomeScreen() {
         )}
       </div>
 
-      {/* Quick Stats Grid */}
       <div className="grid grid-cols-2 gap-3">
         {sections.map((s) => (
-          <Link key={s.href} href={s.href}>
+          <button key={s.href} onClick={() => { tgHaptic("light"); router.push(s.href); }} className="text-left">
             <Card accent={s.accent}>
               <div className="flex items-center gap-2 mb-2">
                 <s.icon size={18} className={`text-accent-${s.accent}`} />
@@ -121,11 +117,10 @@ export function HomeScreen() {
               </div>
               <p className="text-2xl font-bold">{s.value.split(" ")[0]} <span className="text-sm font-normal text-muted">{s.value.split(" ").slice(1).join(" ")}</span></p>
             </Card>
-          </Link>
+          </button>
         ))}
       </div>
 
-      {/* Upcoming Event */}
       {upcomingEvent && (
         <div className="space-y-2">
           <h3 className="text-sm font-medium text-muted uppercase tracking-wider">Скоро</h3>
@@ -144,9 +139,8 @@ export function HomeScreen() {
         </div>
       )}
 
-      {/* Capsule Teaser */}
       {upcomingCapsule && (
-        <Link href="/capsules">
+        <button onClick={() => { tgHaptic("light"); router.push("/capsules"); }} className="text-left w-full">
           <Card accent="pink" className="bg-gradient-to-r from-accent-pink/20 to-transparent">
             <div className="flex items-center gap-3">
               <div className="w-10 h-10 rounded-full bg-accent-pink/30 flex items-center justify-center">
@@ -158,7 +152,7 @@ export function HomeScreen() {
               </div>
             </div>
           </Card>
-        </Link>
+        </button>
       )}
     </div>
   );

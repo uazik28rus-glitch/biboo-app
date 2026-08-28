@@ -1,0 +1,21 @@
+{
+  "/_not-found/page": "app/_not-found/page.js",
+  "/api/capsules/route": "app/api/capsules/route.js",
+  "/api/couple/create/route": "app/api/couple/create/route.js",
+  "/api/budget_goals/route": "app/api/budget_goals/route.js",
+  "/api/auth/telegram/route": "app/api/auth/telegram/route.js",
+  "/api/couple/join/route": "app/api/couple/join/route.js",
+  "/api/documents/route": "app/api/documents/route.js",
+  "/api/couple/route": "app/api/couple/route.js",
+  "/api/events/route": "app/api/events/route.js",
+  "/api/tasks/route": "app/api/tasks/route.js",
+  "/api/transactions/route": "app/api/transactions/route.js",
+  "/budget/page": "app/budget/page.js",
+  "/api/wishes/route": "app/api/wishes/route.js",
+  "/calendar/page": "app/calendar/page.js",
+  "/documents/page": "app/documents/page.js",
+  "/capsules/page": "app/capsules/page.js",
+  "/tasks/page": "app/tasks/page.js",
+  "/wishes/page": "app/wishes/page.js",
+  "/page": "app/page.js"
+}

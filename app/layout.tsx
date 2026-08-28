@@ -19,6 +19,9 @@ export const viewport: Viewport = {
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="ru">
+      <head>
+        <script src="https://telegram.org/js/telegram-web-app.js" defer />
+      </head>
       <body className="bg-background text-white antialiased">
         <AuthProvider>{children}</AuthProvider>
       </body>

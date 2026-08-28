@@ -2,6 +2,7 @@
 
 import { useState, useEffect, createContext, useContext } from "react";
 import { authTelegram, getCouple } from "./api";
+import { tgInitData, tgReady, tgExpand } from "./telegram";
 
 export type User = {
   id: string;
@@ -49,7 +50,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const initAuth = async () => {
     try {
-      // Проверяем localStorage
       const storedUser = localStorage.getItem("biba_user");
       if (!storedUser) {
         setState((s) => ({ ...s, isLoading: false }));
@@ -95,19 +95,15 @@ export function useAuth() {
   return useContext(AuthContext);
 }
 
-// Telegram WebApp auth
 export async function loginWithTelegram(): Promise<{ user: User; couple: Couple | null }> {
-  const tg = (window as any).Telegram?.WebApp;
-  if (!tg) {
-    throw new Error("Not in Telegram WebApp");
-  }
-
-  const initData = tg.initData;
+  const initData = tgInitData();
   if (!initData) {
-    throw new Error("No initData");
+    throw new Error("Not in Telegram WebApp");
   }
 
   const result = await authTelegram(initData);
   localStorage.setItem("biba_user", JSON.stringify(result.user));
+  tgReady();
+  tgExpand();
   return result;
 }

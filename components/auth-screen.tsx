@@ -1,81 +1,49 @@
 "use client";
 
-import { useState } from "react";
-import { Heart, Loader2 } from "lucide-react";
-import { loginWithTelegram } from "@/lib/use-auth";
-import { Card } from "./ui/card";
+import { useRouter, usePathname } from "next/navigation";
+import { Home, CheckSquare, Calendar, Wallet, Heart, Lock, Clock } from "lucide-react";
+import { cn } from "@/lib/utils";
+import { tgHaptic } from "@/lib/telegram";
 
-export function AuthScreen() {
-  const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState("");
+const navItems = [
+  { href: "/", icon: Home, label: "Мы" },
+  { href: "/tasks", icon: CheckSquare, label: "Задачи" },
+  { href: "/calendar", icon: Calendar, label: "Календарь" },
+  { href: "/budget", icon: Wallet, label: "Бюджет" },
+  { href: "/wishes", icon: Heart, label: "Хотелки" },
+  { href: "/capsules", icon: Clock, label: "Капсулы" },
+  { href: "/documents", icon: Lock, label: "Доки" },
+];
 
-  const handleLogin = async () => {
-    setIsLoading(true);
-    setError("");
-    try {
-      await loginWithTelegram();
-      window.location.reload();
-    } catch (err: any) {
-      setError(err.message || "Ошибка входа");
-    } finally {
-      setIsLoading(false);
-    }
-  };
+export function Navigation() {
+  const router = useRouter();
+  const pathname = usePathname();
 
-  // Демо-режим (для тестов без Telegram)
-  const handleDemo = () => {
-    const demoUser = {
-      id: "demo-user-1",
-      telegram_id: 123456,
-      first_name: "Дмитрий",
-      last_name: "",
-      username: "dmitry",
-    };
-    localStorage.setItem("biba_user", JSON.stringify(demoUser));
-    window.location.reload();
+  const handleNav = (href: string) => {
+    tgHaptic("light");
+    router.push(href);
   };
 
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center px-6 space-y-8">
-      <div className="text-center space-y-4">
-        <div className="w-20 h-20 mx-auto rounded-full bg-gradient-to-br from-accent-blue to-accent-pink flex items-center justify-center">
-          <Heart size={36} className="text-white fill-white" />
-        </div>
-        <h1 className="text-4xl font-bold">Биба</h1>
-        <p className="text-muted">Приложение для тех, кто вместе</p>
+    <nav className="fixed bottom-0 left-0 right-0 z-50 bg-background/90 backdrop-blur-lg border-t border-border">
+      <div className="flex items-center justify-around py-1 max-w-md mx-auto overflow-x-auto scrollbar-hide">
+        {navItems.map((item) => {
+          const isActive = pathname === item.href;
+          return (
+            <button
+              key={item.href}
+              onClick={() => handleNav(item.href)}
+              className={cn(
+                "flex flex-col items-center gap-0.5 px-2 py-1 rounded-xl transition-colors min-w-[48px]",
+                isActive ? "text-accent-pink" : "text-muted"
+              )}
+            >
+              <item.icon size={20} strokeWidth={isActive ? 2.5 : 2} />
+              <span className="text-[9px] font-medium whitespace-nowrap">{item.label}</span>
+            </button>
+          );
+        })}
       </div>
-
-      <Card className="w-full max-w-sm space-y-4">
-        <button
-          onClick={handleLogin}
-          disabled={isLoading}
-          className="w-full py-3.5 bg-white text-black font-semibold rounded-xl flex items-center justify-center gap-2 hover:bg-white/90 transition-colors disabled:opacity-50"
-        >
-          {isLoading ? <Loader2 size={20} className="animate-spin" /> : "Войти через Telegram"}
-        </button>
-
-        <div className="relative">
-          <div className="absolute inset-0 flex items-center">
-            <div className="w-full border-t border-border" />
-          </div>
-          <div className="relative flex justify-center text-xs">
-            <span className="bg-surface px-2 text-muted">или</span>
-          </div>
-        </div>
-
-        <button
-          onClick={handleDemo}
-          className="w-full py-3 border border-border text-muted font-medium rounded-xl hover:border-accent-blue hover:text-accent-blue transition-colors"
-        >
-          Демо-режим
-        </button>
-      </Card>
-
-      {error && <p className="text-accent-pink text-sm">{error}</p>}
-
-      <p className="text-xs text-muted text-center max-w-xs">
-        Для использования нужен Telegram. Данные хранятся только для вас двоих.
-      </p>
-    </div>
+    </nav>
   );
 }
